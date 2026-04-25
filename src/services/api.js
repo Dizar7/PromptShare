@@ -3,7 +3,7 @@ import axios from 'axios'
 // API Base URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-// Axios 인스턴스 생성
+// 환경 변수 VITE_API_URL이 있으면 그걸 쓰고, 없으면 로컬 호스트(개발용)를 씁니다.
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
