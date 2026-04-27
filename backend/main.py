@@ -1,14 +1,17 @@
 from dotenv import load_dotenv
-load_dotenv()  # .env 파일을 읽어옵니다
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.skill import router as skill_router
+from app.db.database import engine, Base
+from app.db.model.user import User
+from app.db.model.skill import Skill
+
+load_dotenv()
 
 # FastAPI 앱 초기화
 app = FastAPI(title="PromptShare API", version="1.0.0")
 
-# CORS 설정 - 프론트엔드(Vite 개발 서버)에서의 요청 허용
+# CORS 설정
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:3000"],
@@ -17,9 +20,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.routers.user import router as user_router
+
 # 라우터 등록
 app.include_router(skill_router)
+app.include_router(user_router)
 
+@app.on_event("startup")
+async def startup():
+    # DB 테이블 생성 (비동기 방식)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 @app.get("/")
 async def health_check():
