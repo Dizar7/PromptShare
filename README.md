@@ -17,10 +17,11 @@ GitHub Repository: [Dizar7/PromptShare](https://github.com/Dizar7/PromptShare)
 
 ---
 
-## 🖼️ 프로젝트 미리보기
+## 프로젝트 미리보기
 
 ![Main Dashboard](public/logo.png)
-*(실제 대시보드 스크린샷을 여기에 첨부하세요)*
+<img width="1568" height="905" alt="스크린샷 2026-04-28 052508" src="https://github.com/user-attachments/assets/a88ee561-530f-40a5-a7df-cb47f7d7530f" />
+
 
 ---
 
