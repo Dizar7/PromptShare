@@ -79,22 +79,24 @@ GitHub Repository: [Dizar7/PromptShare](https://github.com/Dizar7/PromptShare)
 ## 실행 방법 (Getting Started)
 
 ### 1. 환경 변수 설정
-프로젝트 루트에 `.env` 파일을 생성하고 다음 정보를 입력합니다.
-```env
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_NAME=promptshare
-GEMINI_API_KEY=your_key
-GITHUB_TOKEN=your_token
-```
+프로젝트 루트(`PromptShare/`)백엔드 폴더(`backend/`)에 `.env` 파일을 생성하고 필요한 API 키와 DB 접속 정보를 입력합니다.
 
-### 2. 도커 실행 (DB & Backend)
+### 2. 데이터베이스 실행 (Docker)
+PostgreSQL을 도커 컨테이너로 실행합니다.
 ```bash
 docker-compose up -d
 ```
 
-### 3. 프론트엔드 실행
+### 3. 백엔드(API) 실행
 ```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+### 4. 프론트엔드 실행
+```bash
+# 새로운 터미널에서 실행
 npm install
 npm run dev
 ```
