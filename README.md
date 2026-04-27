@@ -19,7 +19,6 @@ GitHub Repository: [Dizar7/PromptShare](https://github.com/Dizar7/PromptShare)
 
 ## 프로젝트 미리보기
 
-![Main Dashboard](public/logo.png)
 <img width="1568" height="905" alt="스크린샷 2026-04-28 052508" src="https://github.com/user-attachments/assets/a88ee561-530f-40a5-a7df-cb47f7d7530f" />
 
 
@@ -39,19 +38,19 @@ GitHub Repository: [Dizar7/PromptShare](https://github.com/Dizar7/PromptShare)
 
 ## What I Built (핵심 성과)
 
-### 🤖 AI 기반 지능형 프롬프트 엔진
+### AI 기반 지능형 프롬프트 엔진
 - **Gemini 2.5 Flash 연동**: 사용자의 거친 아이디어를 AI가 분석하여 표준 마크다운(Markdown) 기반의 정교한 시스템 프롬프트로 자동 최적화.
 - **GitHub 자동화(Automation)**: 생성된 스킬을 PyGithub를 통해 사내 공용 저장소로 즉시 자동 커밋 및 푸시하는 파이프라인 구축.
 
-### 🌐 글로벌 확장성 및 다국어 시스템
+### 글로벌 확장성 및 다국어 시스템
 - **i18n 기반 4개 국어 지원**: 한국어, 영어, 일본어, 중국어 환경을 완벽하게 대응하여 글로벌 협업 환경 조성.
 - **실시간 언어 전환**: Context API를 활용한 전역 상태 관리로 UI 언어 및 데이터 형식을 실시간 전환.
 
-### 📊 데이터 인사이트 및 대시보드
+### 데이터 인사이트 및 대시보드
 - **실시간 통계 시스템**: 부서별 스킬 등록 현황 및 조회수 기반의 활동 지수 시각화 대시보드 구현.
 - **조회수 기반 추천**: 실시간 메타데이터를 활용하여 인기 스킬을 메인 화면에 상단 배치하는 추천 엔진 구축.
 
-### 🔐 보안 및 아키텍처
+### 보안 및 아키텍처
 - **JWT 인증 시스템**: 안전한 회원가입/로그인 및 개인별 프로필 관리 기능 구현.
 - **PostgreSQL 연동**: 사용자 계정 및 스킬 메타데이터 관리를 위한 관계형 DB 설계 및 연동.
 - **미니멀 프리미엄 UI**: Tailwind CSS를 활용한 다크 모드 지원 및 반응형 사이드바 레이아웃 설계.
