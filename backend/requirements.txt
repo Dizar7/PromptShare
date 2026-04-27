@@ -4,3 +4,5 @@ google-generativeai
 python-dotenv
 pydantic
 PyGithub
+sqlalchemy
+psycopg2-binary

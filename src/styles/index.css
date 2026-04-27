@@ -1,8 +1,57 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary: #1D4ED8;
+  --primary-light: #3B82F6;
+  --primary-dark: #1E40AF;
+  --primary-50: #EFF6FF;
+  --primary-100: #DBEAFE;
+  --secondary: #10B981;
+  --bg: #F8FAFC;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-input: #F1F5F9;
+  --text: #0F172A;
+  --text-muted: #64748B;
+  --text-body: #334155;
+  --accent: #F59E0B;
+  --border: #E2E8F0;
+  --border-hover: #CBD5E1;
+}
+
+.dark {
+  --primary: #3B82F6;
+  --primary-light: #60A5FA;
+  --primary-dark: #2563EB;
+  --primary-50: #1E293B;
+  --primary-100: #334155;
+  --secondary: #34D399;
+  --bg: #0F172A;
+  --bg-sidebar: #1E293B;
+  --bg-card: #1E293B;
+  --bg-input: #334155;
+  --text: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-body: #CBD5E1;
+  --accent: #FBBF24;
+  --border: #334155;
+  --border-hover: #475569;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-text font-sans antialiased transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold tracking-tight;
+  }
+}
 
 /* 전역 스타일 초기화 */
 * {
@@ -11,40 +60,34 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #FAFAFF;
-  color: #1E1B4B;
-  min-height: 100vh;
-  /* 폰트 렌더링 최적화 */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* select 드롭다운의 option 배경 (라이트 테마 대응) */
-select option {
-  background-color: #FFFFFF;
-  color: #1E1B4B;
-}
-
-/* 스크롤바 커스텀 (밝은 톤) */
+/* 스크롤바 커스텀 (미니멀 징크 스타일) */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F5F3FF;
+  @apply bg-bg;
 }
 ::-webkit-scrollbar-thumb {
-  background: #C4B5FD;
-  border-radius: 3px;
+  @apply bg-border rounded-full;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A78BFA;
+  @apply bg-border-hover;
 }
 
-/* 입력 필드 포커스 시 부드러운 ring 효과 */
+/* 포커스 효과 통일 */
 input:focus,
 textarea:focus,
 select:focus {
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+  @apply ring-2 ring-primary ring-opacity-10 border-primary outline-none transition-all;
+}
+
+/* 커스텀 클래스 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-border bg-opacity-50 rounded-full;
 }

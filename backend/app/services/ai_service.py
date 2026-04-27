@@ -46,9 +46,20 @@ async def format_skill_prompt(department: str, title: str, raw_prompt: str) -> d
 }}"""
 
     try:
-        # google-generativeai 패키지 사용 (안정적인 구형 SDK)
+        # 실시간 모니터링을 위한 로그 추가
+        print("\n" + "="*50)
+        print("🤖 Gemini API 실제 호출됨! (Quota 소모 발생)")
+        print(f"   - 모델: gemini-2.5-flash")
+        print(f"   - 제목: {title}")
+        print("="*50 + "\n")
+
+        # google-generativeai 패키지 사용 (Gemini 2.5 Flash 무료 모델)
+        # request_options를 통해 SDK 레벨의 자동 재시도(Retry)를 명시적으로 차단합니다.
         model = genai.GenerativeModel("gemini-2.5-flash")
-        response = model.generate_content(prompt)
+        response = model.generate_content(
+            prompt,
+            request_options={"retry": None}  # 자동 재시도 절대 금지
+        )
 
         # Gemini 응답에서 JSON 추출
         # 응답에 코드 블록(```json ... ```)이 포함될 수 있으므로 정리

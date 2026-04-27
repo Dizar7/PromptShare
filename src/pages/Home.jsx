@@ -1,106 +1,140 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import api from '../services/api'
 import SkillForm from '../components/SkillForm'
 import SkillList from '../components/SkillList'
+import { useLanguage } from '../contexts/LanguageContext'
 
-// Home: 메인 페이지 - 스킬 작성 폼과 스킬 목록 대시보드를 조합
+// 홈 페이지 컴포넌트
 export default function Home() {
-  // 스킬 목록 새로고침을 위한 트리거
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [skills, setSkills] = useState([])
+  const [viewMode, setViewMode] = useState('grid')
+  const [importedText, setImportedText] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const { t } = useLanguage()
 
-  // 새 스킬 생성 완료 시 목록 새로고침
+  // 백엔드로부터 스킬 목록을 가져오는 함수
+  const fetchSkills = async () => {
+    setIsLoading(true)
+    try {
+      const response = await api.get('/skill/list')
+      // 백엔드에서 배열을 직접 반환하므로 response.data를 바로 사용합니다.
+      setSkills(Array.isArray(response.data) ? response.data : [])
+    } catch (err) {
+      console.error('스킬 목록 로드 실패:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // 페이지 로드 시 기존 스킬 목록 불러오기
+  useEffect(() => {
+    let ignore = false
+    const startFetching = async () => {
+      if (!ignore) await fetchSkills()
+    }
+    startFetching()
+    return () => { ignore = true }
+  }, [])
+
+  // 새 스킬이 생성되었을 때 목록 갱신
   const handleSkillCreated = () => {
-    setRefreshTrigger((prev) => prev + 1)
+    fetchSkills()
+  }
+
+  // 로컬 파일 드롭 핸들러
+  const handleDrop = (e) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (file && file.type === 'text/plain') {
+      const reader = new FileReader()
+      reader.onload = (event) => setImportedText(event.target.result)
+      reader.readAsText(file)
+    }
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      
-      {/* 히어로 배경 그라데이션 (라벤더 - 핑크 - 하늘색) */}
-      <div className="absolute inset-0 bg-hero-gradient" />
+    <div className="max-w-7xl mx-auto space-y-6 pb-12">
+      {/* 대시보드 헤더 */}
+      <header className="space-y-1.5 animate-fadeIn">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-0.5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">{t('dashboard')}</span>
+          <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent opacity-50"></div>
+        </div>
+        <h1 className="text-3xl font-black text-text tracking-tighter sm:text-4xl">
+          {t('hero_title').split('AI')[0]} <span className="text-primary italic">AI Skills</span> {t('hero_title').split('AI')[1]}
+        </h1>
+        <p className="text-text-muted max-w-2xl text-base font-medium leading-relaxed opacity-80">
+          {t('hero_desc')}
+        </p>
+      </header>
 
-      {/* 배경 장식 원형 (화사한 Glow) */}
-      <div className="absolute top-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-purple-300/20 rounded-full blur-[120px] pointer-events-none animate-float" />
-      <div className="absolute bottom-[-15%] left-[-10%] w-[40vw] h-[40vw] bg-pink-300/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-[40%] left-[50%] w-[25vw] h-[25vw] bg-cyan-200/15 rounded-full blur-[80px] pointer-events-none" />
-
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 md:py-16 space-y-10">
-
-        {/* 헤더 */}
-        <header className="text-center space-y-4">
-          {/* 배지 */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 border border-border shadow-card backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-            <span className="text-primary font-medium text-sm">AI Powered Workspace</span>
-          </div>
-          
-          {/* 제목 */}
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-            <span className="text-text">Prompt</span>
-            <span className="text-transparent bg-clip-text bg-primary-gradient">Share</span>
-          </h1>
-
-          {/* 부제목 */}
-          <p className="text-text-body text-base md:text-lg max-w-xl mx-auto leading-relaxed">
-            대충 적어도 괜찮습니다.<br className="md:hidden" />
-            AI가 완벽한 마크다운 스킬 파일로 다듬어<br className="md:hidden" />
-            GitHub에 공유해 드립니다.
-          </p>
-        </header>
-
-        {/* 메인 컨텐츠 */}
-        <main className="space-y-8">
-          
-          {/* 스킬 작성 섹션 */}
-          <section className="bg-bg-card border border-border rounded-2xl p-6 md:p-8 shadow-card hover:shadow-card-hover transition-shadow duration-300 relative overflow-hidden">
-            {/* 상단 그라데이션 라인 */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-primary-gradient" />
+      {/* 메인 콘텐츠 영역 */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* 좌측: 새 스킬 작성 (7/12) */}
+        <div className="lg:col-span-7 sticky top-6 transition-all duration-300">
+          <div 
+            onDragOver={(e) => e.preventDefault()} 
+            onDrop={handleDrop}
+            className="bg-bg-card border border-border rounded-[32px] p-8 shadow-card backdrop-blur-sm relative overflow-hidden group transition-all duration-500 hover:shadow-2xl"
+          >
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-1000"></div>
             
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
-                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-text font-bold text-lg">
-                  새 스킬 등록
-                </h2>
-                <p className="text-text-muted text-sm">노하우를 입력하면 AI가 전문 스킬 파일로 변환합니다</p>
-              </div>
-            </div>
-            <SkillForm onSkillCreated={handleSkillCreated} />
-          </section>
-
-          {/* 스킬 목록 섹션 */}
-          <section className="bg-bg-card border border-border rounded-2xl p-6 md:p-8 shadow-card hover:shadow-card-hover transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h2 className="text-2xl font-black text-text tracking-tighter">{t('new_skill')}</h2>
+                  <p className="text-text-muted text-[11px] mt-0.5 font-medium opacity-80">AI power for your professional know-how.</p>
+                </div>
+                <div className="w-12 h-12 bg-bg-input rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                  <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </div>
-                <div>
-                  <h2 className="text-text font-bold text-lg">
-                    스킬 보드
-                  </h2>
-                  <p className="text-text-muted text-sm">GitHub에 등록된 스킬 파일을 확인합니다</p>
-                </div>
+              </div>
+              
+              <div className="bg-white/40 dark:bg-black/5 rounded-2xl p-1">
+                <SkillForm onSkillCreated={handleSkillCreated} importedText={importedText} />
               </div>
             </div>
-            <SkillList refreshTrigger={refreshTrigger} />
-          </section>
-        </main>
-
-        {/* 푸터 */}
-        <footer className="text-center text-text-muted text-sm py-8 flex flex-col items-center gap-3">
-          <p className="font-medium">PromptShare</p>
-          <p className="text-xs">AI 기반 사내 스킬파일 자동화 및 공유 플랫폼</p>
-          <div className="flex items-center gap-2 text-xs">
-            <span>Powered by</span>
-            <span className="px-2.5 py-1 bg-primary-50 text-primary rounded-lg border border-border font-medium">Gemini 2.5 Flash</span>
           </div>
-        </footer>
+        </div>
+
+        {/* 우측: 최근 생성된 스킬 목록 (5/12) */}
+        <div className="lg:col-span-5 space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-black text-text tracking-tight uppercase italic opacity-80">{t('recent_skills')}</h2>
+              <span className="bg-bg-input text-text-muted text-[10px] font-black px-2 py-0.5 rounded-full border border-border">{skills.length}</span>
+            </div>
+            
+            <button 
+              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              className="p-2 bg-bg-card border border-border rounded-xl hover:border-primary hover:text-primary transition-all shadow-sm group"
+              title={viewMode === 'grid' ? t('view_list') : t('view_grid')}
+            >
+              {viewMode === 'grid' ? (
+                <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              )}
+            </button>
+          </div>
+
+          <div className="min-h-[300px]">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 text-text-muted animate-pulse">
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-xs font-bold tracking-widest uppercase opacity-50">{t('loading')}</p>
+              </div>
+            ) : (
+              <SkillList skills={skills} viewMode={viewMode} isCompact={true} onRefresh={fetchSkills} />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
