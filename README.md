@@ -11,7 +11,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
 [![Gemini AI](https://img.shields.io/badge/Gemini_AI-2.5_Flash-4285F4?style=flat-square&logo=googlegemini)](https://ai.google.dev/)
 
-GitHub Repository: [Dizar7/PromptShare](https://github.com/Dizar7/PromptShare)
+Notion: [PRD](https://www.notion.so/PRD-PromptShare-34f5759e27d3802f936cd98438e98ccf?source=copy_link)
 
 </div>
 
